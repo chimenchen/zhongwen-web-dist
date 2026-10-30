@@ -587,9 +587,24 @@
         return false;
     }
 
+    // 韻單位關係圖（力導向）：獨立於主圖，直接操作 ECharts，避免套用主圖的縮放/事件邏輯
+    async function createRelationChart(chartDom, optionJson) {
+        await ensureEchartsLoaded();
+        const option = typeof optionJson === 'string' ? JSON.parse(optionJson) : optionJson;
+        let inst = echarts.getInstanceByDom(chartDom);
+        if (!inst) {
+            inst = echarts.init(chartDom);
+        } else {
+            inst.resize();
+        }
+        inst.setOption(option, true);
+        return true;
+    }
+
     window.yunpuChart = {
         createOrUpdateChart: createOrUpdateChart,
         resizeChart: resizeChart,
+        createRelationChart: createRelationChart,
     };
 
 })(window);
