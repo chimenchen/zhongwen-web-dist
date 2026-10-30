@@ -620,7 +620,11 @@
         } else {
             inst.resize();
         }
-        inst.setOption(option, true);
+        // 作者版（option._author 存在）時，在標題區顯示作者名
+    if (option && option._author && option.title) {
+        option.title.text = (option.title.text || '') + '（' + option._author + '）';
+    }
+    inst.setOption(option, true);
         // 點連線＝選中該韻對（交給頁面處理，等同點矩陣格子）
         inst.off('click');
         inst.on('click', function (params) {
