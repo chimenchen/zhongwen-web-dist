@@ -591,6 +591,24 @@
     async function createRelationChart(chartDom, optionJson) {
         await ensureEchartsLoaded();
         const option = typeof optionJson === 'string' ? JSON.parse(optionJson) : optionJson;
+        // 關係圖自訂 tooltip：數字只保留一位小數，避免一串浮點
+        if (option.relationTooltip) {
+            const round = (v) => (typeof v === 'number' ? String(Math.round(v * 10) / 10) : v);
+            option.tooltip.formatter = function (params) {
+                const d = params.data || {};
+                if (params.dataType === 'edge' || d.kind === 'link') {
+                    return (
+                        params.data.source + ' ↔ ' + params.data.target +
+                        '<br/>離合指數：' + round(d.value) +
+                        '<br/>合押：' + round(d.heya) +
+                        '；自押 ' + round(d.aa) + ' / ' + round(d.bb) +
+                        '<br/>判別：' + d.verdict + (d.enough ? '' : '（樣本不足）')
+                    );
+                }
+                return params.name + '<br/>字次：' + round(d.value);
+            };
+            delete option.relationTooltip;
+        }
         let inst = echarts.getInstanceByDom(chartDom);
         if (!inst) {
             inst = echarts.init(chartDom);
