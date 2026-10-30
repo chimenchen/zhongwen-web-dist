@@ -56,6 +56,11 @@
             this.showLoading();
             try {
                 await this.initChartInstance(createNewInstance);
+                // 容器可能先前被 display:none 隱藏（例如切到離合矩陣），
+                // 那時 ECharts 初始化得到 0 尺寸；這裡在可見狀態下重新量一次。
+                if (this.chart && this.chartDom.clientWidth > 0) {
+                    this.chart.resize();
+                }
                 // 如果之前顯示了自定義加載指示器，現在移除它
                 this.hideLoading();
                 // 使用 ECharts 的加載指示器
@@ -569,8 +574,22 @@
     }
 
     // 公開 API
+    // 對外：容器由隱藏變可見後，讓 ECharts 重新量尺寸
+    function resizeChart(chartDom) {
+        if (!chartDom) return false;
+        const inst = window.echarts && window.echarts.getInstanceByDom
+            ? window.echarts.getInstanceByDom(chartDom)
+            : null;
+        if (inst && chartDom.clientWidth > 0) {
+            inst.resize();
+            return true;
+        }
+        return false;
+    }
+
     window.yunpuChart = {
         createOrUpdateChart: createOrUpdateChart,
+        resizeChart: resizeChart,
     };
 
 })(window);
