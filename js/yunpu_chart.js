@@ -599,13 +599,13 @@
                 if (params.dataType === 'edge' || d.kind === 'link') {
                     return (
                         params.data.source + ' ↔ ' + params.data.target +
-                        '<br/>離合指數：' + round(d.value) +
+                        '<br/>離合指數：' + round(d.index_value) +
                         '<br/>合押：' + round(d.heya) +
                         '；自押 ' + round(d.aa) + ' / ' + round(d.bb) +
                         '<br/>判別：' + d.verdict + (d.enough ? '' : '（樣本不足）')
                     );
                 }
-                return params.name + '<br/>字次：' + round(d.value);
+                return params.name + '<br/>字次：' + round(d.zici);
             };
             delete option.relationTooltip;
         }
