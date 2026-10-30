@@ -590,6 +590,11 @@
     // 韻單位關係圖（力導向）：獨立於主圖，直接操作 ECharts，避免套用主圖的縮放/事件邏輯
     async function createRelationChart(chartDom, optionJson) {
         await ensureEchartsLoaded();
+        // 容器剛從 display:none 變可見時，這一帧可能還是 0 尺寸；等它排出寬高再初始化
+        for (let i = 0; i < 40; i++) {
+            if (chartDom.clientWidth > 0 && chartDom.clientHeight > 0) break;
+            await new Promise(resolve => setTimeout(resolve, 50));
+        }
         const option = typeof optionJson === 'string' ? JSON.parse(optionJson) : optionJson;
         // 關係圖自訂 tooltip：數字只保留一位小數，避免一串浮點
         if (option.relationTooltip) {
@@ -616,6 +621,15 @@
             inst.resize();
         }
         inst.setOption(option, true);
+        // 容器可能剛由 display:none 變可見，這一帧量的尺寸仍可能是 0；
+        // 稍後再 resize 一次即可正常繪製。
+        setTimeout(() => {
+            try {
+                inst.resize();
+            } catch (e) {
+                /* ignore */
+            }
+        }, 200);
         return true;
     }
 
