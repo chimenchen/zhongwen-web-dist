@@ -621,6 +621,18 @@
             inst.resize();
         }
         inst.setOption(option, true);
+        // 點連線＝選中該韻對（交給頁面處理，等同點矩陣格子）
+        inst.off('click');
+        inst.on('click', function (params) {
+            const d = params && params.data;
+            if (params.dataType === 'edge' && d && d.source && d.target) {
+                window.dispatchEvent(
+                    new CustomEvent('yunpu-relation-pair', {
+                        detail: { a: d.source, b: d.target },
+                    })
+                );
+            }
+        });
         // 容器可能剛由 display:none 變可見，這一帧量的尺寸仍可能是 0；
         // 稍後再 resize 一次即可正常繪製。
         setTimeout(() => {
