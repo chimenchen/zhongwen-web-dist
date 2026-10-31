@@ -651,6 +651,27 @@
                 /* ignore */
             }
         }, 200);
+
+        // 容器大小改變（使用者拖拉調整高度、或版面變動）→ 自動重繪
+        if (typeof ResizeObserver !== 'undefined') {
+            if (chartDom.__relationResizeObserver) {
+                chartDom.__relationResizeObserver.disconnect();
+            }
+            let pending = null;
+            const ro = new ResizeObserver(() => {
+                if (pending) return;
+                pending = setTimeout(() => {
+                    pending = null;
+                    try {
+                        inst.resize();
+                    } catch (e) {
+                        /* ignore */
+                    }
+                }, 60);
+            });
+            ro.observe(chartDom);
+            chartDom.__relationResizeObserver = ro;
+        }
         return true;
     }
 
