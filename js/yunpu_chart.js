@@ -628,6 +628,11 @@
         // 點連線＝選中該韻對（交給頁面處理，等同點矩陣格子）
         inst.off('click');
         inst.on('click', function (params) {
+        // 點節點 → 讓頁面顯示該韻的自押例證（點連線仍走下面的韻對邏輯）
+        if (params.dataType === 'node' && params.name) {
+            window.dispatchEvent(new CustomEvent('yunpu-relation-unit', { detail: { unit: String(params.name) } }));
+            return;
+        }
             const d = params && params.data;
             if (params.dataType === 'edge' && d && d.source && d.target) {
                 window.dispatchEvent(
